@@ -103,4 +103,4 @@ jobs:
         run: |
           docker run --rm -v "$PWD/security/falco":/rules \
             falcosecurity/falco:latest \
-            falco -r /etc/falco/falco_rules.yaml -r /rules/custom_rules.yaml --validate /rules/custom_rules.yaml
+            falco --validate /rules/custom_rules.yaml
