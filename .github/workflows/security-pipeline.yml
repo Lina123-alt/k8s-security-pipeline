@@ -58,3 +58,24 @@ jobs:
         with:
           image-ref: k8s-security-pipeline:latest
           severity: CRITICAL,HIGH
+  sbom-generation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t k8s-security-pipeline:latest -f docker/Dockerfile .
+
+      - name: Generate SBOM with Syft
+        uses: anchore/sbom-action@v0
+        with:
+          image: k8s-security-pipeline:latest
+          format: cyclonedx-json
+          output-file: sbom.cyclonedx.json
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.cyclonedx.json
