@@ -104,3 +104,33 @@ jobs:
           docker run --rm -v "$PWD/security/falco":/rules \
             falcosecurity/falco:latest \
             falco --validate /rules/custom_rules.yaml
+  security-gate:
+    runs-on: ubuntu-latest
+    needs: [code-scan, secret-scan, dependency-scan, image-scan, sbom-generation, k8s-policy-check, runtime-rules-check]
+    if: always()
+    steps:
+      - name: Evaluate results and generate summary
+        run: |
+          echo "## 🛡️ Security Pipeline Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Couche | Job | Résultat |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| 1. Code (Semgrep) | code-scan | ${{ needs.code-scan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 2. Secrets (Gitleaks) | secret-scan | ${{ needs.secret-scan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 3. Dépendances (pip-audit) | dependency-scan | ${{ needs.dependency-scan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 4. Image Docker (Trivy) | image-scan | ${{ needs.image-scan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 5. SBOM (Syft) | sbom-generation | ${{ needs.sbom-generation.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 6. Kubernetes (Kyverno) | k8s-policy-check | ${{ needs.k8s-policy-check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 7. Runtime (Falco) | runtime-rules-check | ${{ needs.runtime-rules-check.result }} |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Block on critical failures
+        run: |
+          if [[ "${{ needs.code-scan.result }}" == "failure" || \
+                "${{ needs.secret-scan.result }}" == "failure" || \
+                "${{ needs.image-scan.result }}" == "failure" || \
+                "${{ needs.k8s-policy-check.result }}" == "failure" || \
+                "${{ needs.runtime-rules-check.result }}" == "failure" ]]; then
+            echo "❌ Une couche critique a échoué. Fusion bloquée."
+            exit 1
+          fi
+          echo "✅ Toutes les couches critiques sont passées."
