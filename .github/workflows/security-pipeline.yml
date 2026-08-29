@@ -93,3 +93,14 @@ jobs:
           docker run --rm -v "$PWD":/work -w /work \
             ghcr.io/kyverno/kyverno-cli:latest \
             apply policies/pod-security/baseline --resource k8s/deployment.yaml
+  runtime-rules-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate Falco rules syntax
+        run: |
+          docker run --rm -v "$PWD/security/falco":/rules \
+            falcosecurity/falco:latest \
+            falco --validate /rules/custom_rules.yaml
