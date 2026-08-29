@@ -130,7 +130,7 @@ jobs:
                 "${{ needs.image-scan.result }}" == "failure" || \
                 "${{ needs.k8s-policy-check.result }}" == "failure" || \
                 "${{ needs.runtime-rules-check.result }}" == "failure" ]]; then
-            echo "❌ Une couche critique a échoué. Fusion bloquée."
+            echo " Une couche critique a échoué. Fusion bloquée."
             exit 1
           fi
-          echo "✅ Toutes les couches critiques sont passées."
+          echo " Toutes les couches critiques sont passées."
