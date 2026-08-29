@@ -85,8 +85,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Install Kyverno CLI
+        run: go install github.com/kyverno/kyverno/cmd/cli/kubectl-kyverno@latest
+
       - name: Get Kyverno policies
         run: git clone https://github.com/kyverno/policies.git
 
       - name: Check manifests against best-practices policies
-        run: kyverno apply policies/pod-security/baseline --resource k8s/deployment.yaml
+        run: $(go env GOPATH)/bin/kubectl-kyverno apply policies/pod-security/baseline --resource k8s/deployment.yaml
