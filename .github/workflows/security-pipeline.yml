@@ -85,8 +85,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Kyverno CLI
-        uses: kyverno/action-install-cli@v0.2.0
+      - name: Get Kyverno policies
+        run: git clone https://github.com/kyverno/policies.git
 
       - name: Check manifests against best-practices policies
-        run: kyverno apply https://github.com/kyverno/policies/pod-security/baseline --resource k8s/deployment.yaml
+        run: kyverno apply policies/pod-security/baseline --resource k8s/deployment.yaml
