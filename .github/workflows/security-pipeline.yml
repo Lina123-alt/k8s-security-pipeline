@@ -79,3 +79,16 @@ jobs:
         with:
           name: sbom
           path: sbom.cyclonedx.json
+  k8s-policy-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Kyverno CLI
+        run: |
+          curl -sL https://github.com/kyverno/kyverno/releases/latest/download/kyverno-cli_linux_x86_64.tar.gz | tar xz
+          sudo mv kyverno /usr/local/bin/
+
+      - name: Check manifests against best-practices policies
+        run: kyverno apply https://github.com/kyverno/policies/pod-security/baseline --resource k8s/deployment.yaml

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-security-pipeline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-security-pipeline
+  template:
+    metadata:
+      labels:
+        app: k8s-security-pipeline
+    spec:
+      containers:
+        - name: backend
+          image: k8s-security-pipeline:latest
+          ports:
+            - containerPort: 8000
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
