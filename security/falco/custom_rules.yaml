@@ -1,12 +1,6 @@
 - rule: Shell Spawned in Backend Container
   desc: Détecte l'ouverture d'un shell interactif à l'intérieur du conteneur backend, souvent signe d'une compromission
-  condition: >
-    evt.type = execve
-    and evt.dir = 
-    and container.name = "k8s-security-pipeline"
-    and proc.name in (bash, sh, zsh)
-  output: >
-    Shell suspect ouvert dans le conteneur backend
-    (utilisateur=%user.name commande=%proc.cmdline conteneur=%container.name)
+  condition: evt.type=execve and evt.dir=< and container.name="k8s-security-pipeline" and proc.name in (bash,sh,zsh)
+  output: "Shell suspect ouvert dans le conteneur backend (utilisateur=%user.name commande=%proc.cmdline conteneur=%container.name)"
   priority: WARNING
   tags: [container, shell, backend]
