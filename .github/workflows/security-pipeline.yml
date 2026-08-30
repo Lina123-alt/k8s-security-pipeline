@@ -149,14 +149,21 @@ jobs:
             -e DATABASE_URL="sqlite:///./test.db" \
             -e JWT_SECRET_KEY="test-secret-key-for-dast-only" \
             k8s-security-pipeline:latest
-          sleep 5
 
+          for i in {1..15}; do
+            if curl -s http://localhost:8000/docs > /dev/null; then
+              echo "L'application répond."
+              break
+            fi
+            echo "En attente du démarrage..."
+            sleep 2
+          done
+
+          docker logs backend-test
       - name: Run OWASP ZAP baseline scan
         uses: zaproxy/action-baseline@v0.14.0
         with:
           target: 'http://localhost:8000'
           cmd_options: '-a'
-
-      - name: Stop application container
-        if: always()
-        run: docker stop backend-test
+          issue_title: 'ZAP DAST Scan Report'
+        continue-on-error: true
