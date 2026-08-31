@@ -123,6 +123,7 @@ jobs:
           echo "| 6. Kubernetes (Kyverno) | k8s-policy-check | ${{ needs.k8s-policy-check.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| 7. Runtime (Falco) | runtime-rules-check | ${{ needs.runtime-rules-check.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| 8. Application en fonctionnement (OWASP ZAP) | dast-scan | ${{ needs.dast-scan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 9. Cluster Kubernetes (kube-bench) | k8s-cluster-benchmark | ${{ needs.k8s-cluster-benchmark.result }} |" >> $GITHUB_STEP_SUMMARY
 
       - name: Block on critical failures
         run: |
@@ -168,3 +169,22 @@ jobs:
           cmd_options: '-a'
           issue_title: 'ZAP DAST Scan Report'
         continue-on-error: true
+  k8s-cluster-benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1
+
+      - name: Run kube-bench
+        run: |
+          docker run --rm --pid=host \
+            -v /etc:/etc:ro \
+            -v /var:/var:ro \
+            -v "$(which kubectl)":/usr/local/bin/kubectl \
+            -v ~/.kube:/root/.kube:ro \
+            --network host \
+            aquasecurity/kube-bench:latest \
+            --benchmark cis-1.24 || true
