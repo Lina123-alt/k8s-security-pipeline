@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database.database import SessionLocal
@@ -20,6 +20,14 @@ def get_db():
 
 @router.post("/register")
 def register(user: UserCreate, db: Session = Depends(get_db)):
+    existing_user = db.query(User).filter(User.email == user.email).first()
+
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cet email est déjà utilisé"
+        )
+
     hashed_password = hash_password(user.password)
 
     new_user = User(
@@ -35,7 +43,6 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
         "message": "User created successfully",
         "email": new_user.email,
     }
-
 
 @router.post("/login")
 def login(user: UserCreate, db: Session = Depends(get_db)):
