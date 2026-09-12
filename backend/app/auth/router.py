@@ -65,8 +65,9 @@ def login(user: UserCreate, db: Session = Depends(get_db)):
     return {
         "access_token": access_token,
         "token_type": "bearer",
+        "role": existing_user.role,
+        "email": existing_user.email,
     }
-
 
 @router.get("/admin-only")
 def admin_only(payload: dict = Depends(require_roles("admin"))):
