@@ -18,6 +18,17 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: orderly-secrets
+                  key: database-url
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: orderly-secrets
+                  key: jwt-secret-key
           securityContext:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
