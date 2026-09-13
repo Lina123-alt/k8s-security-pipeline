@@ -15,6 +15,7 @@ spec:
       containers:
         - name: backend
           image: k8s-security-pipeline:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8000
           securityContext:
