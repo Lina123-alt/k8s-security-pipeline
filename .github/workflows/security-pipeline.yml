@@ -94,7 +94,7 @@ jobs:
       - name: Check manifests against best-practices policies
         run: |
           docker run --rm -v "$PWD":/work -w /work \
-            ghcr.io/kyverno/kyverno-cli:latest \
+            ghcr.io/kyverno/kyverno-cli:v1.13.4 \
             apply policies/pod-security/baseline --resource k8s/deployment.yaml
   runtime-rules-check:
     runs-on: ubuntu-latest
