@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from app.limiter import limiter
 from sqlalchemy.orm import Session
 
 from app.database.database import SessionLocal
@@ -17,9 +18,9 @@ def get_db():
     finally:
         db.close()
 
-
 @router.post("/register")
-def register(user: UserCreate, db: Session = Depends(get_db)):
+@limiter.limit("3/minute")
+def register(request: Request, user: UserCreate, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == user.email).first()
 
     if existing_user:
@@ -45,7 +46,9 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     }
 
 @router.post("/login")
-def login(user: UserCreate, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def login(request: Request, user: UserCreate, db: Session = Depends(get_db)):
+    
     existing_user = db.query(User).filter(User.email == user.email).first()
 
     if not existing_user:
