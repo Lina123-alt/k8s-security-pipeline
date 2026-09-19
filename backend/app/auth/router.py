@@ -1,3 +1,5 @@
+from app.auth.blacklist import revoke_token
+from app.auth.security import verify_token
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from app.limiter import limiter
 from sqlalchemy.orm import Session
@@ -5,7 +7,7 @@ from sqlalchemy.orm import Session
 from app.database.database import SessionLocal
 from app.auth.models import User
 from app.auth.schemas import UserCreate
-from app.auth.security import hash_password, verify_password, create_access_token
+from app.auth.security import hash_password, verify_password, create_access_token, verify_token, security
 from app.auth.rbac import require_roles
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -71,6 +73,10 @@ def login(request: Request, user: UserCreate, db: Session = Depends(get_db)):
         "role": existing_user.role,
         "email": existing_user.email,
     }
+@router.post("/logout")
+def logout(payload: dict = Depends(verify_token), credentials=Depends(security)):
+    revoke_token(credentials.credentials, expires_in_seconds=1800)
+    return {"message": "Déconnecté avec succès"}
 
 @router.get("/admin-only")
 def admin_only(payload: dict = Depends(require_roles("admin"))):

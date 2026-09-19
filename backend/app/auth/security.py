@@ -49,7 +49,15 @@ def create_access_token(data: dict):
 def verify_token(
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ):
+    from app.auth.blacklist import is_token_revoked
+
     token = credentials.credentials
+
+    if is_token_revoked(token):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has been revoked"
+        )
 
     try:
         payload = jwt.decode(
