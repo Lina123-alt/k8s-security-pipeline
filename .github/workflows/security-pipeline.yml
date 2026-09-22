@@ -220,7 +220,7 @@ jobs:
           echo "IMAGE=$IMAGE" >> $GITHUB_ENV
       - name: Sign image with Cosign (keyless)
         run: cosign sign --yes $IMAGE
-   frontend-dependency-scan:
+  frontend-dependency-scan:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
