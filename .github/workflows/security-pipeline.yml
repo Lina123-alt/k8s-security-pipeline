@@ -127,6 +127,7 @@ jobs:
           echo "| 7. Runtime (Falco) | runtime-rules-check | ${{ needs.runtime-rules-check.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| 8. Application en fonctionnement (OWASP ZAP) | dast-scan | ${{ needs.dast-scan.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| 9. Cluster Kubernetes (kube-bench) | k8s-cluster-benchmark | ${{ needs.k8s-cluster-benchmark.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 11. Dépendances Frontend (npm audit) | frontend-dependency-scan | ${{ needs.frontend-dependency-scan.result }} |" >> $GITHUB_STEP_SUMMARY
 
       - name: Block on critical failures
         run: |
@@ -219,3 +220,21 @@ jobs:
           echo "IMAGE=$IMAGE" >> $GITHUB_ENV
       - name: Sign image with Cosign (keyless)
         run: cosign sign --yes $IMAGE
+   frontend-dependency-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm install
+
+      - name: Run npm audit
+        working-directory: frontend
+        run: npm audit --audit-level=high
