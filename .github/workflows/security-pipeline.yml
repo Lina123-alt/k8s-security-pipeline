@@ -65,6 +65,9 @@ jobs:
 
       - name: Run backend tests
         working-directory: backend
+        env:
+          DATABASE_URL: "sqlite:///./test.db"
+          JWT_SECRET_KEY: "test-secret-key-for-ci-only"
         run: python -m pytest tests/ -v
   image-scan:
     runs-on: ubuntu-latest
