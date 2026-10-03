@@ -10,4 +10,9 @@ export default defineConfig({
       cert: fs.readFileSync('./cert.pem'),
     },
   },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './src/setupTests.js',
+  },
 })
