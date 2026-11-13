@@ -1,0 +1,33 @@
+# Environment variables and secrets
+.env
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environment
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Node
+node_modules/
+
+# Local files that are not part of the project
+minikube-linux-amd64
+projet.zip
+/package.json
+/package-lock.json
+
+# Keys and credentials
+encryption-config.yaml
+*.pem
+*.key
