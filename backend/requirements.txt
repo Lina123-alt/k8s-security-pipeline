@@ -29,7 +29,7 @@ pydantic_core==2.46.4
 Pygments==2.21.0
 PyJWT==2.15.1
 pytest==9.1.1
-pytest-asyncio==1.4.0
+pytest-asyncio==1.4.1.post1
 python-dotenv==1.2.2
 redis==8.1.0
 rsa==4.9.1
