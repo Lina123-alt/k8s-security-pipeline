@@ -1,0 +1,30 @@
+driver:
+  kind: modern_ebpf
+tty: true
+image:
+  pullPolicy: IfNotPresent
+falcoctl:
+  artifact:
+    install:
+      enabled: false
+    follow:
+      enabled: false
+collectors:
+  containerEngine:
+    enabled: false
+falco:
+  load_plugins: [container]
+  plugins:
+    - name: container
+      library_path: libcontainer.so
+      init_config:
+        label_max_len: 100
+        with_size: false
+mounts:
+  volumes:
+    - name: containerd-sock
+      hostPath:
+        path: /run/containerd
+  volumeMounts:
+    - name: containerd-sock
+      mountPath: /host/run/containerd
