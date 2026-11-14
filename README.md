@@ -9,7 +9,7 @@ Ce projet part d'une idée simple : **une application n'est pas sécurisée parc
 
 Il combine une application réelle (**Orderly**, une API de gestion de commandes avec son interface web) et la chaîne qui la construit, la vérifie, la déploie sur Kubernetes et la surveille pendant qu'elle tourne.
 
-> Projet réalisé par **Lina**, étudiante en cybersécurité à l'ENSAK (Khouribga).
+
 
 ---
 
